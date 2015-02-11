@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>导航20150210</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="E:\DPan\MyFile\jquery-1.9.1.min.js"></script>
+
+<style type="text/css">
+	
+	*{margin:0;	padding:0;}
+	
+	.navdiv
+	{
+		margin:10% auto; width:660px;  height:45px;
+	}
+
+	.navdiv ul
+	{
+		list-style: none;
+	}
+
+	.navdiv ul li
+	{
+		display: list-item;
+		float:left;
+		text-align: center;
+		width:110px;
+		height: 45px;
+		line-height: 45px;
+		background: #45A8DF;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.navdiv ul li span
+	{
+		font-family: Arial;
+		color:#fff;
+		width:110px;
+		height: 45px;
+		line-height: 45px;
+		float:left;
+	}
+
+	.out
+	{
+		margin-top:-45px;
+		border-bottom: 3px solid #fff;
+		border-top: 1px solid #fff;
+		border-right: 1px solid #fff;
+		border-left: 1px solid #fff;
+		cursor:pointer;
+	}
+
+	.over
+	{
+		font-family: Arial;
+		color:#fff;
+		width:110px;
+		height: 45px;
+		line-height: 45px;
+		background:#45A8DF;
+		cursor:pointer;
+	}
+</style>
+
+</head>
+
+<body>
+
+	<div class="navdiv">
+		<ul>
+			<li>
+				<span class="out"><span style="background:#fea274;">Home</span></span>
+				<span class="over">Home</span>			
+			</li>
+			<li>
+				<span class="out"><span style="background:#b0bbba;">HTML/CSS</span></span>
+				<span class="over">HTML/CSS</span>
+			</li>
+			<li>
+				<span class="out"><span style="background:#a3f091;">JAVASCRIPT</span></span>
+				<span class="over">Javascript</span>			
+			</li>
+			<li>
+				<span class="out"><span style="background:#86dbf9;">ABOUT</span></span>
+				<span class="over">About</span>
+			</li>
+			<li>
+				<span class="out"><span style="background:#e0caf0;">Home</span></span>
+				<span class="over">Home</span>			
+			</li>
+			<li>
+				<span class="out"><span style="background:#9dace9;">HTML/CSS</span></span>
+				<span class="over">HTML/CSS</span>
+			</li>
+		</ul>
+	</div>
+	<input type="button" onclick="a()" value="test" />
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('div.navdiv ul li').hover(function(){
+			$(this).find('span.over').stop().animate({marginTop:'45px'},'fast');
+			$(this).find('span.out').stop().animate({marginTop:'0px'},'fast');
+		},function(){
+			$(this).find('span.out').stop().animate({marginTop:'-45px'},'fast');
+			$(this).find('span.over').stop().animate({marginTop:'0px'},'fast');
+		});
+
+	});
+</script>
+
+<script type="text/javascript">
+
+		function f(){
+			var count = 0;
+			var show = function(){
+				count++;
+				alert(count);
+				return count;
+			}
+
+			return show;
+		}
+
+		var a = f();
+</script>
+</html>
