@@ -102,7 +102,7 @@ namespace TestConsole
             {
                 foreach(XmlNode item in node)
                 {
-                    Console.WriteLine( "{0}", item.Name );
+                    //Console.WriteLine( "{0}", item.Name );
                     if(item.Name.Equals( TagName ) ) //进行判断
                     {
                         item.InnerText = Value;
