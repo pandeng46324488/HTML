@@ -1,0 +1,92 @@
+<!DOCTYPE>
+<html>
+<head>
+	<title>弹窗插件</title>
+	<meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+ 	<script type="text/javascript" src="JS/jquery-1.9.1.min.js"></script>
+ 	<script type="text/javascript" src="JS/popUp.js"></script>
+ 	<link rel="stylesheet" type="text/css" href="css/popUp.css" />
+	<style type="text/css">
+		.showDiv
+		{
+			width:80%;
+			margin:5% auto;
+			max-width: 800px;
+
+			border:1px solid #ccc;
+			box-shadow: 5px 5px 5px #ccc;
+			padding:20px;
+		}
+		#newTestDiv
+		{
+			border:1px solid #ccc;
+			background-color:#fff;
+			position:fixed;
+			top:0;
+			right: 0;
+			left:0;
+			bottom: 0;
+			margin:auto;
+			width: 0;
+			height: 0;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<div class="showDiv">
+		<input type="button" id="test" value="测试" />
+		<input type="text" id="input" />
+		<input type="button" value="测试" onclick="checkInput()"/>
+		<input type="button" id="newTest" value="添加新" />
+
+		<select>
+		 <option>1</option>
+		 <option>2</option>
+		</select>
+		<a class='pic' title='餐椅'>
+			<img src='http://www.hao123.com' />
+		</a>
+	</div>
+
+</body>
+
+<script type="text/javascript">
+
+	function checkInput(){
+		var con = document.getElementById('input').value;
+		var reg = /^\d{1,10}$/;
+		alert( reg.test(con) );
+	}	
+
+</script>
+
+<script type="text/javascript">
+	$(function(){
+		$("#test").click(function(){
+
+			var obj = {
+				title: '警告',
+				content : '使用的插件出现错误！',
+				closeText : '关闭'
+			}
+
+			$.popUp(obj);
+		});
+
+		$("#newTest").click(function(){
+			console.log( scaleStr('dpan/js/public.js', '/js/public.js') );
+		});
+
+		function scaleStr( a, b ){
+			var index = a.indexOf( b );
+			if( index > -1 ){
+				return a.slice(0,index);
+			}
+	}
+
+		
+	});
+</script>
+</html>

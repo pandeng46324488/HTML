@@ -1,0 +1,49 @@
+
+/*弹窗样式*/
+.popDiv
+{
+    position: fixed;
+    
+    top:0;
+    bottom: 0;
+    left:0;
+    right: 0;
+    margin:auto;
+
+    width: 0;
+    height: 0;
+
+    background-color: #fff;
+    border:1px solid #ccc;
+    box-shadow: 0 0 5px #ccc;
+    font-size:14px;
+    padding:5px;
+    z-index:30;
+    overflow: hidden;
+}
+
+/* 标题层 */
+.titleDiv
+{
+   border-bottom: 1px solid #ccc;
+   padding:5px;
+   height: 25px;
+}
+
+/*关闭按钮*/
+.closeBtn
+{
+   float:right;
+   cursor: pointer;
+   margin-right: 5px;
+   color:#000;
+   font-weight: bold;
+}
+
+/*内容层*/
+.content
+{
+  padding:5px;
+  text-indent: 2em;
+}
+

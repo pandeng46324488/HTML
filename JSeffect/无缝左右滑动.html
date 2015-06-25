@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Maquee</title>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+    <script type="text/javascript" src="../jquery-1.9.1.min.js"></script>
+    <link href="maquee.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div class="box">
+        <div class="pre btn"> &lt; </div>
+        <div class="viewport">
+            <ul>
+                <li>
+                    <img src="../images/1.jpg" />
+                </li>
+
+                <li>
+                    <img src="../images/2.jpg" />
+                </li>
+
+                <li>
+                    <img src="../images/3.jpg" />
+                </li>
+
+                <li>
+                    <img src="../images/4.jpg" />
+                </li>
+
+                <li>
+                    <img src="../images/5.jpg" />
+                </li>
+
+            </ul>            
+        </div>
+        <div class="next btn"> &gt; </div>
+    </div>
+   
+</body>
+
+<script type="text/javascript">
+
+    $(function(){
+
+        //前翻
+        $('div.pre').click(function(){                  
+            
+            var $ul = $('.viewport ul');
+
+            if( !$ul.is(':animated') ){
+
+                var w = $('.viewport ul li').width(); 
+                //移动
+                $ul.animate({marginLeft:'-'+w+'px'}, 700, function(){
+                //克隆
+                var move = $('.viewport ul li:first-child').clone();
+                    $ul.append(move);
+                
+                    //删除
+                    $('.viewport ul li:first-child').remove();
+
+                    //恢复
+                    $ul.css({marginLeft:'0px'});            
+                });
+            }
+        });
+
+        //后翻
+        $('div.next').click(function(){
+
+            var $ul = $('.viewport ul');
+
+            if( !$ul.is(':animated') ){
+                
+                $ul.css('marginLeft','-550px');
+                //克隆并插入
+                var $li = $('.viewport ul li:last-child').clone();
+                $ul.prepend( $li );
+
+                //移动
+                $ul.animate({marginLeft:'0px'}, 700,function(){
+                    //删除
+                    $('.viewport ul li:last-child').remove();
+                });
+            }
+        });
+    })
+
+</script>
+
+</html>
