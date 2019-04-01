@@ -1,0 +1,233 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>
+</title>
+
+<meta Content="Content-Type" context="text/html;charset=utf-8"/>
+
+<style>
+</style>
+
+</head>
+
+<body>
+
+
+	<canvas id="can" >
+	</canvas>
+
+
+</body>
+
+<script type="text/javascript">
+
+	var canvasObj = null;
+	var context = null;
+	var eles = [];
+	var scan = { w:0, h:0 };
+	var moveFinish = false;
+	var stepConfig = {
+		time: 200 //单位：ms
+		, radius:{
+			max:20,
+			min:2,
+			step:0.3
+		}
+	}
+	var colors = [
+  		{r:20,g:120,b:90,a:0.2}
+  		 //, '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
+  		// '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50',
+  		// '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
+  		// '#FF5722'
+  	];
+
+	window.onload = function(){
+		canvasObj = getObj('can');
+		if(canvasObj.getContext){
+			context = canvasObj.getContext('2d');
+			scan.w = canvasObj.width = window.innerWidth;
+			scan.h = canvasObj.height = window.innerHeight;
+			init();
+		}
+	};
+
+	function init(){
+		setRequestAnimationFrame();
+		simpleTest();
+	}
+
+	//单个测试
+	function simpleTest(){
+
+		//绘制一个粒子
+		eles.push( new Shape(20,20,20) );
+
+		//移动
+		//moveFinish = true;
+		moveEles();
+	}
+
+	function moveEles(){
+		if(eles && eles.length > 0 ){
+
+			context.clearRect( 0, 0, scan.w, scan.h );
+
+			for( let item of eles){
+				item.move();
+				moveFinish =  moveFinish ? item.isFinish() : moveFinish;
+			}
+
+			if(!moveFinish){
+				window.requestAnimationFrame(moveEles);
+			}
+		}
+	}
+
+	/*
+	 * Desc: 粒子基类
+	 */
+	function ShapeBase(x,y,r){
+		this.x = x;
+		this.y = y; 
+		this.r = r;
+		this.target = { x:-1, y:-1, r:-1};
+		this.source = { x:x,  y:y,  r:getRandom() };
+		this.color = getRandomColorObj();
+	}
+
+	ShapeBase.prototype.getColor = function(){
+		return `rgba(${ this.color.r}, ${this.color.g} , ${this.color.b} , ${this.color.a} )`;
+	}
+
+	ShapeBase.prototype.moveFinish = function(){
+		console.log(`${this.target}, ${this.target.x}, ${this.target.y}`);
+		return (-1 == this.target.x && -1 == this.target.y);
+	}
+
+	function Shape(x,y,r){
+		ShapeBase.call(this,x,y,r);
+	}
+
+	Shape.prototype = new ShapeBase();
+	Shape.prototype.move = function(){
+
+			//生成一个随机位置
+			if(this.moveFinish()){
+				this.target = {
+					x:getRandom( 0, scan.w ),
+					y:getRandom( 0, scan.h )
+				}
+				this.source = {
+					x: this.x,
+					y: this.y
+				}
+			}
+
+			//检查当前是否完成移动
+			if( this.x == this.target.x && this.y == this.target.y ){
+				this.target.x = -1;
+				this.target.y = -1;
+			}
+
+			var disx = Math.abs( this.source.x - this.target.x );
+			var disy = Math.abs( this.source.y - this.target.y );
+
+			var stepx = disx*1.0/stepConfig.time;
+			var stepy = disy*1.0/stepConfig.time;
+
+			//移动x
+			if( Math.abs( this.x - this.target.x) <= stepx ){
+				this.x = this.target.x;
+			}
+			else{
+				this.x  +=  this.target.x > this.source.x ? stepx : -stepx;
+			}
+
+			//移动y
+			if( Math.abs( this.y - this.target.y) <= stepy ){
+				this.y = this.target.y;
+			}
+			else{
+				this.y  +=  this.target.y > this.source.y ? stepy : -stepy;
+			}
+
+			//其他变化
+			this.otherAction();
+
+			//绘制
+			this.draw();
+	}
+
+	//粒子其它变化
+	Shape.prototype.otherAction = function(){
+
+		if( !this.target.r || this.target.r<=-1){
+			this.target.r = ( getRandom(0,100) %2 == 0 )? -stepConfig.radius.step : stepConfig.radius.step;
+		}
+
+		this.r += this.target.r;
+
+		//改变粒子半径大小
+		if(this.r>= stepConfig.radius.max){
+			this.r = stepConfig.radius.max;
+			this.target.r = -1;
+		}
+
+		if(this.r <= stepConfig.radius.min){
+			this.r = stepConfig.radius.min;
+			this.target.r = -1;
+		}
+	}
+
+	//绘制
+	Shape.prototype.draw = function(){
+		context.moveTo(this.x,this.y);
+		context.beginPath();
+		context.arc( this.x, this.y, this.r, 0, Math.PI*2 );
+		context.fillStyle = this.getColor();
+		context.fill();
+		context.closePath();
+	}
+
+
+	//获取一个随机颜色
+	function getRandomColorObj(){
+		return colors[getRandom(0,colors.length-1)];
+	}
+
+	/*
+	 * s: 起始值  e: 结束值
+	 * desc: 获取一个随机值
+	 */
+	function getRandom(s,e){
+		let enlarge = 1, v = e;
+		while(v>1)
+		{
+			v/=10;
+			enlarge*=10;
+		}
+		let r = -1;
+		while(r<s || r>e){
+			 r = parseInt(Math.random()*enlarge);
+		}
+		return r;
+	}
+
+	function getObj(id){
+		return document.getElementById(id);
+	}
+
+	//动画刷新函数设置
+	function setRequestAnimationFrame()
+	{		
+		if(!window.requestAnimationFrame){
+    		window.requestAnimationFrame = (window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||                                  function(callback){return window.setTimeout(callback,1000/60)});    
+    	}
+	}
+
+
+</script>
+
+</html>
