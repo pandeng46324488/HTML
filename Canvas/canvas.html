@@ -1,0 +1,283 @@
+<!DOCTYPE>
+<html>
+
+<head>
+
+<title></title>
+
+<style type="text/css">
+	
+	body{margin:0; padding:0;}
+	#can{width:100%; height:100%;}
+	.operaDiv{position:absolute; bottom:5%; left:5%;padding:0.2%;border:1px solid #ccc;background: #ccc;}
+
+</style>
+
+</head>
+
+<body>
+
+<canvas id="can"></canvas>
+
+<div class="operaDiv">
+	<span>输入文字</span><input type="text" value="" id="inputMessage" />
+	<div>
+		<span>Grid-X</span>:1<input type="range" min="1" max="20" value="10" step="0.1" id="gridX" />20
+	</div>
+	<div>
+		<span>Grid-Y</span>:1<input type="range" min="1" max="20" value="10" step="0.1" id="gridY" />20
+	</div>
+</div>
+
+</body>
+
+<script type="text/javascript">
+
+	var canvasObj = null;
+	var context = null;
+	var ctxW = 0;
+	var ctxH = 0;
+	var start = false;
+	var last = 0;	
+
+	//粒子配置
+	var particle = {
+			placement:[],
+			lastPlacement:[],
+			grid:{
+				x:10,
+				y:10
+			},
+			r:5,
+			paint:{
+				maxR:6,
+				minR:2,
+				varR:0.04
+			},
+			fontFamily:'raleway,sans-serif'
+		};
+
+	//粒子放置的位置
+	var placement = null;
+
+	//图形配置
+	var textConfig = {
+		size:180,
+		text:'',
+		color:'',
+		lastText:''
+	}	
+
+	var colors = [
+  		 '#f44336'
+  		 //, '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
+  		// '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50',
+  		// '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
+  		// '#FF5722'
+  	];
+
+	window.onload = function(){		
+		canvasObj = document.getElementById('can');
+		if(canvasObj.getContext){
+			context = canvasObj.getContext('2d');
+			ctxW = canvasObj.width = window.innerWidth;
+			ctxH = canvasObj.height = window.innerHeight;
+			Init();
+		}		
+	};
+	
+	//初始化
+	function Init(){
+		setRequestAnimationFrame();
+		bindEvent();
+		textConfig.lastText = textConfig.text;
+		textConfig.text = getMessage();
+		getImageData(textConfig.text);
+		//执行动画
+		window.requestAnimationFrame(drawParticle);
+	}
+
+	//绑定事件
+	function bindEvent(){
+		var gridX = document.getElementById('gridX');
+		gridX.addEventListener('change',function(e){
+			particle.grid.x = this.value;
+			context.clearRect(0,0,ctxW,ctxH);
+			textConfig.text = getMessage();
+			textConfig.lastText = textConfig.text;
+			getImageData(textConfig.text);
+			window.requestAnimationFrame(drawParticle);
+			return;
+		});
+
+		var gridY = document.getElementById('gridY');
+		gridX.addEventListener('change',function(e){
+			particle.grid.y = this.value;
+			context.clearRect(0,0,ctxW,ctxH);
+			textConfig.lastText = textConfig.text;
+			textConfig.text = getMessage();
+			getImageData(textConfig.text);
+			window.requestAnimationFrame(drawParticle);
+			return;
+		});
+
+		var message = document.getElementById('inputMessage');
+		message.addEventListener('change',function(e){
+			context.clearRect(0,0,ctxW,ctxH);
+			textConfig.lastText = textConfig.text;
+			textConfig.text = getMessage();
+			getImageData(textConfig.text);
+			window.requestAnimationFrame(drawParticle);
+			console.log(textConfig.text);
+			return ;
+		});
+	}
+
+	//绘制图形并获取数据源
+	function getImageData(text){
+
+		context.clearRect(0,0,ctxW,ctxH);
+
+		//绘制图形并获取数据源
+		context.textAlign = "center";
+		context.font = textConfig.size + `px ${particle.fontFamily}`;
+		var len = context.measureText(text).width;
+		context.fillText(text, len/2+2, textConfig.size);
+
+		//particle.lastPlacement = particle.placement;
+		particle.placement = [];
+		if(context.getImageData)
+		{
+			var idata = context.getImageData(0, 0, ctxW, ctxH);
+			var buffer32 = new Uint32Array(idata.data.buffer);
+			let z = 0;
+	        for(var j=0; j < ctxH; j += particle.grid.y){
+	           for(var i=0 ; i < ctxW; i += particle.grid.x){
+	                if(buffer32[j * ctxW + i]){
+	        	        var particleItem = new Particle(i, j, getRandom(particle.paint.minR,particle.paint.maxR));       	        
+	        	        let lastItem = particle.lastPlacement.find(lt =>lt.x==i&&lt.y==j);	        	        	        	        
+	        	        if( lastItem )
+	                    {
+	                    	particle.placement.push(lastItem);
+	                    }
+	                    else{
+	                    	particle.placement.push(particleItem);		
+	                    }
+	                    z+=1;
+	                }
+	            }
+	        }
+			context.clearRect(0,0,ctxW,ctxH);
+		}
+	}
+
+	//粒子元素
+	function Particle(posx,posy,r=2){
+		this.x = posx;
+		this.y = posy;
+		this.r = r;
+		this.color = getColor();
+		this.opacticy = 0;
+		this.state = 0;
+		this.drawSelf = function(t){
+
+			let cr = particle.paint.varR;
+			
+			switch(this.state){
+				case 0:					
+					this.state = (getRandom(1,10)+this.x*3+this.y*7)%2-1;
+					break;
+				case 1:					
+					this.r+= cr;
+					if(this.r >= particle.paint.maxR){
+					  this.state = -1;
+					}
+					break;
+				case -1:
+					this.r-= cr;
+					 if(this.r <= particle.paint.minR){
+					 	this.r = particle.paint.minR;
+					 	this.state = 1;
+					 }
+					break;
+				default:break;
+			}
+			paint(this.x,this.y,this.r,this.color);
+		}
+	}
+
+	//动画
+	function drawParticle(timestamp){
+		if(!start) {start = true;}
+		let proc = timestamp - last;
+			//清除画布
+			context.clearRect(0,0,ctxW,ctxH);
+			textConfig.text = getMessage();
+			if(textConfig.lastText != textConfig.text){
+				textConfig.lastText = textConfig.text;
+				getImageData(textConfig.text);
+			}
+
+			for(let i=0; i<particle.placement.length;i++)
+			{
+				//粒子自绘制
+				particle.placement[i].drawSelf(timestamp);
+			}			
+			last = timestamp;
+   	 	window.requestAnimationFrame(drawParticle);
+	}
+
+	function paint(x,y,r,color){
+		context.moveTo(x,y);
+		context.beginPath();
+		context.arc(x,y,r,0,Math.PI*2);
+		context.fillStyle = color;
+		context.fill();
+		context.closePath();
+	}
+
+
+	//获取一个随机值
+	function getRandom(s,e){
+		let enlarge = 1, v = e;
+		while(v>1)
+		{
+			v/=10;
+			enlarge*=10;
+		}
+		let r = -1;
+		while(r<s || r>e){
+			 r = parseInt(Math.random()*enlarge);
+		}
+		return r;
+	}
+
+	function getColor(){
+		return colors[getRandom(0,colors.length-1)];
+	}
+
+	//获取当前时间字符串
+	function getMessage(){
+		var result = '';
+		result = document.getElementById('inputMessage').value;
+		if( result != '') { textConfig.text = result; return result;}
+		let date = new Date();
+		return "";
+		//return `${date.getFullYear()}-${fd(date.getMonth()+1)}-${fd(date.getDate())} ${fd(date.getHours())}:${fd(date.getMinutes())}:${fd(date.getSeconds())}`;
+	}
+
+	function fd(a){
+		return a<10? '0'+a : a;
+	}
+
+	//动画刷新函数设置
+	function setRequestAnimationFrame()
+	{		
+		if(!window.requestAnimationFrame){
+    		window.requestAnimationFrame = (window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||                                  function(callback){return window.setTimeout(callback,1000/60)});    
+    	}
+	}
+
+</script>
+
+</html>
