@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3D Cloud Label</title>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+
+    <div id="container" class="container">
+
+    </div>
+
+</body>
+
+
+<script type="text/javascript">
+
+    window.onload = function () {
+
+        let CX = id('container').offsetWidth;
+        let CY = id('container').offsetHeight;
+        let ct = id('container');
+        console.log("container:{width:" + ct.offsetHeight + ",height:" + ct.offsetHeight + ",offsetLeft:" + ct.offsetLeft + ",offsetTop:" + ct.offsetTop + "}");
+
+        console.log(document.body);
+        console.log("document:{width:" + document.body.scrollWidth + ",height:" + document.body.scrollHeight + ",offsetLeft:" + document.body.offsetLeft + ",offsetTop:" + document.body.offsetTop + "}");
+
+
+        // document.addEventListener('mouseover', function (event) {
+        //     console.log("over-{x:" + event.x + ",y:" + event.y + "}")
+        // })
+
+        // document.addEventListener('mouseout', function (event) {
+        //     console.log("out-{x:" + event.x + ",y:" + event.y + "}")
+        // })
+
+        // document.addEventListener('mousemove', function (event) {
+        //     console.log('mousemove:' + JSON.stringify(event));
+        // })
+
+        function id(id) {
+            return document.getElementById(id);
+        }
+
+    }
+
+</script>
+
+<style>
+    .container {
+
+        border: 1px solid #ccc;
+        width: 350px;
+        height: 350px;
+        margin: auto;
+    }
+</style>
+
+</html>

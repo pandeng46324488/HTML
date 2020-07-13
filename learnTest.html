@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3D Cloud Label</title>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+    <div>
+        这是一段文字
+        <p>
+            <command>这是命令</command>
+        </p>
+        <dialog>
+            对话：1，对话B
+        </dialog>
+
+        <summary details="ffew">
+            AABDDW
+        </summary>
+
+        <input type="date" onchange="show(event,value)" />
+        <input type="color" onchange="show(event,value)" />
+        <input type="range" onchange="show(event,value)" />
+    </div>
+
+    <div id="demo">
+
+    </div>
+
+    <div id="mapholder"></div>
+
+    <div style="margin:20px">
+        <div class="fO">
+            <p class="f">A</p>
+        </div>
+        <div class="fO">
+            <p class="f">B</p>
+        </div>
+        <div class="fO">
+            <p class="f">C</p>
+        </div>
+        <div class="fO">
+            <p class="f">D</p>
+        </div>
+    </div>
+</body>
+
+<style type="text/css">
+    .fO {
+        transition: all 0.6s;
+        border-radius: 5px;
+        vertical-align: middle;
+        text-align: center;
+        align-content: center;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        border: 3px solid #dfdfdf;
+        background: #fff;
+        display: inline-block;
+        position: relative;
+    }
+
+    .fO:hover {
+        box-shadow: 2px 10px 2px rgb(177, 175, 175);
+        cursor: pointer;
+        border: 3px solid #ccc;
+        border-radius: 0;
+        /* transform: scale(1.2, 1.2); */
+    }
+
+    .f {
+        transition: all 0.6s;
+        margin: 0;
+        padding: 0;
+        transition: all 0.6s;
+        color: #23b7d1;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .fO:hover .f {
+        transform: translateY(-6px);
+        transform: scale(1.5, 1.5);
+    }
+</style>
+
+
+<script type="text/javascript">
+
+    function show(event, value) {
+        console.log(event);
+        console.log(value);
+        console.log(event.target.value);
+    }
+
+    window.onload = function () {
+
+        var x = document.getElementById("demo");
+        //getLocation();
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            }
+            else {
+                x.innerHTML = "该浏览器不支持获取地理位置。";
+            }
+        }
+
+        function showPosition(position) {
+            console.log(position);
+            x.innerHTML = "纬度: " + position.coords.latitude +
+                "<br>经度: " + position.coords.longitude;
+
+            var latlon = position.coords.latitude + "," + position.coords.longitude;
+
+            var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="
+                + latlon + "&zoom=14&size=400x300&sensor=false";
+            document.getElementById("mapholder").innerHTML = "<img src='" + img_url + "'>";
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    x.innerHTML = "用户拒绝对获取地理位置的请求。"
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    x.innerHTML = "位置信息是不可用的。"
+                    break;
+                case error.TIMEOUT:
+                    x.innerHTML = "请求用户地理位置超时。"
+                    break;
+                case error.UNKNOWN_ERROR:
+                    x.innerHTML = "未知错误。"
+                    break;
+            }
+        }
+    }
+
+
+</script>
+
+</html>
